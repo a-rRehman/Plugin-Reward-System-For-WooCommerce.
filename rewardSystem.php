@@ -95,15 +95,19 @@ function display_cart_reward_section()
     if (is_user_logged_in()) {
         $user_id = get_current_user_id();
         $points = intval(get_user_points($user_id));
-
         echo '<div class="reward-section">';
-        echo '<p>You have ' . $points . ' points. You can avail up to $' . ($points / get_option('reward_points_conversion')) . ' discount by redeeming those.</p>';
-        echo '<a href="#" onclick="redeemPoints()" class="redeem-points-button">Redeem my points</a>';
-        echo '</div>';
+        if ($points > 20) {
+            echo '<p>You have ' . $points . ' points. You can avail up to $' . ($points / get_option('reward_points_conversion')) . ' discount by redeeming those.</p>';
+            echo '<a class="btn-custom" href="http://localhost/wordpress/index.php/checkout/" onclick="redeemPoints()" class="redeem-points-button">Redeem my points</a>';
+            echo '</div>';
+        } else {
+            echo '<p>You have ' . $points . ' points. You need Atleast 20 Point to redeem the coupon.';
+            echo '</div>';
+        }
     } else {
         echo '<div class="reward-section">';
-        echo '<p>You can earn points on every transaction. Please check out our <a href="link-to-reward-program">Reward Program</a>.</p>';
-        echo '<a href="http://localhost/wordpress/wp-login.php" class="signup-reward-program-button">Signup for Reward Program</a>';
+        echo '<p>You can earn points on every transaction.';
+        echo '<a class=button-custom href="http://localhost/wordpress/wp-login.php" class="signup-reward-program-button">Signup for Reward Program</a></p>';
         echo '</div>';
     }
 }
@@ -115,14 +119,14 @@ function display_checkout_reward_section()
         $user_id = get_current_user_id();
         $points = intval(get_user_points($user_id));
 
-        echo '<div class="reward-section">';
-        echo '<p>You have ' . $points . ' points. You can avail up to $' . ($points / get_option('reward_points_conversion')) . ' discount by redeeming those.</p>';
-        echo '<a href="#" onclick="redeemPoints()" class="redeem-points-button">Redeem my points</a>';
-        echo '</div>';
+        // echo '<div class="reward-section">';
+        // echo '<p>You have ' . $points . ' points. You can avail up to $' . ($points / get_option('reward_points_conversion')) . ' discount by redeeming those.</p>';
+        // echo '<a href="#" onclick="redeemPoints()" class="redeem-points-button">Redeem my points</a>';
+        // echo '</div>';
     } else {
-        echo '<div class="reward-section">';
-        echo '<p>You can earn points on every transaction. Please check out our <a href="link-to-reward-program">Reward Program</a>.</p>';
-        echo '<a href="link-to-signup-page" class="signup-reward-program-button">Signup for Reward Program</a>';
+        echo '<div class="reward-section alpha">';
+        echo '<p>You can earn points on every transaction.';
+        echo '<a href="http://localhost/wordpress/wp-login.php" class="signup-reward-program-button">Signup for Reward Program</a></p>';
         echo '</div>';
     }
 }
@@ -141,12 +145,13 @@ function append_user_points_to_account_page_content($content)
         $points = intval(get_user_points($user_id)); // Use your existing function to get the user's points
         $user_display_name = get_the_author_meta('display_name', $user_id);
 
-        $points_text = '<div><p style="font-size:26px"><b>Points: </b> <i>Mr ' . $user_display_name . '</i> Your Rewards Points Are: ' . $points . '</p>
+        $points_text = '<div class="reward-section"><p style="font-size:26px"><b>Points: </b> <i>Mr ' . $user_display_name . '</i> Your Rewards Points Are: ' . $points . '</p>
 </div>';
-        $content .= $points_text;
+        $points_text .= $content;
+
     }
 
-    return $content;
+    return $points_text;
 
 }
 
@@ -174,7 +179,7 @@ function add_points_to_order_email($order, $sent_to_admin, $plain_text, $email)
     if ($plain_text) {
         echo $all_points_message . "\n";
     } else {
-        echo '<p>' . $all_points_message . '</p><p>' . $specific_points_message . '</p>';
+        echo '<div class="reward-section"><p>' . $all_points_message . '</p><p>' . $specific_points_message . '</p></div>';
     }
 }
 add_filter('woocommerce_email_customer_details', 'add_points_to_order_email', 10, 4);
@@ -199,7 +204,7 @@ function append_user_points_to_order_received($content)
         }
 
         $user_display_name = get_the_author_meta('display_name', $user_id);
-        $points_text = '<div class="order-received-points">';
+        $points_text = '<div class="reward-section">';
         $points_text .= '<p>Your Rewards Points for this order: ' . $points . '</p>';
         $points_text .= '</div>';
         $content = $points_text . $content;
@@ -319,7 +324,7 @@ function redeem_points_for_discount()
             echo '</div>';
         } else {
             // Display a message if the user doesn't have enough points to redeem
-            echo '<div class="error-message">';
+            echo '<div class="reward-section">';
             echo 'You need at least 20 points to redeem for a discount.';
             echo '</div>';
         }
