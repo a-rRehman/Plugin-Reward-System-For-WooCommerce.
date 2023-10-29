@@ -1,24 +1,21 @@
 <?php
 /*
 Plugin Name: WooCommerce Reward System
-Description: Adds a reward system to WooCommerce.
-Version: 1.0
-Author: Your Name
+Description: Reward system to WooCommerce.
+Version: 0.0
+Author: AbdurRehman
  */
 
 //displaying error lines
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// initial value of user_point setup
-// Hook into user registration to set initial points
-
 //------------------------------------------Setting intial value for user point------------------------------------------
 function set_initial_points_on_registration($user_id)
 {
-    // Set the initial points value for new users
-    $initial_points = 0; // You can set this to any initial value you prefer
-    // Store the initial points in user_meta
+    // Setting the initial points value for new users
+    $initial_points = 0;
+    // Storeing the initial points in user_meta
     update_user_meta($user_id, 'user_points', $initial_points);
 }
 
@@ -81,7 +78,6 @@ function update_user_points_on_purchase($order_id)
     $user_id = $order->get_user_id();
     $order_total = $order->get_total();
     $points_earned = floatval($order_total); // 1 point per $1 spent
-
     add_user_points($user_id, $points_earned);
     // Add points earned for the specific order
     add_user_points_for_order($user_id, $order_id, $points_earned);
@@ -97,8 +93,8 @@ function display_cart_reward_section()
         $points = intval(get_user_points($user_id));
         echo '<div class="reward-section">';
         if ($points > 20) {
-            echo '<p>You have ' . $points . ' points. You can avail up to $' . ($points / get_option('reward_points_conversion')) . ' discount by redeeming those.</p>';
-            echo '<a class="btn-custom" href="http://localhost/wordpress/index.php/checkout/" onclick="redeemPoints()" class="redeem-points-button">Redeem my points</a>';
+            echo '<p>You have ' . $points . ' points. You can avail up to $' . ($points / get_option('reward_points_conversion')) . ' discount by redeeming those.';
+            echo '<a class="button-custom" href="http://localhost/wordpress/index.php/checkout/" onclick="redeemPoints()" class="redeem-points-button">Redeem my points</a></p>';
             echo '</div>';
         } else {
             echo '<p>You have ' . $points . ' points. You need Atleast 20 Point to redeem the coupon.';
@@ -142,16 +138,15 @@ function append_user_points_to_account_page_content($content)
         $user_id = get_current_user_id();
         $login = is_user_logged_in();
 
-        $points = intval(get_user_points($user_id)); // Use your existing function to get the user's points
+        $points = intval(get_user_points($user_id));
         $user_display_name = get_the_author_meta('display_name', $user_id);
 
         $points_text = '<div class="reward-section"><p style="font-size:26px"><b>Points: </b> <i>Mr ' . $user_display_name . '</i> Your Rewards Points Are: ' . $points . '</p>
 </div>';
-        $points_text .= $content;
-
+        $content .= $points_text;
     }
 
-    return $points_text;
+    return $content;
 
 }
 
@@ -187,8 +182,6 @@ add_filter('woocommerce_email_customer_details', 'add_points_to_order_email', 10
 // ----------------------------------------------------------------------------------------
 
 //-----------------------------------------Adding Points on Recipt Page-------------------------------------------
-
-// Modify the function that displays points on the "Order Received" page to get points earned for the specific order.
 
 function append_user_points_to_order_received($content)
 {
@@ -271,8 +264,8 @@ add_action('admin_init', 'register_reward_settings');
 function generate_and_apply_discount_coupon($user_id, $cart_total)
 {
     $coupon_code = 'REWARD_' . $user_id . '_' . time();
-    // $discount_amount = $cart_total * 0.5; // 1 point = $0.5 discount
-    $discount_amount = $cart_total; // 1 point = $0.5 discount
+
+    $discount_amount = $cart_total;
 
     $coupon = array(
         'post_title' => $coupon_code,
@@ -308,10 +301,9 @@ function redeem_points_for_discount()
 
         if ($points >= 20) {
             // Check if the user has at least 20 points to redeem for a $1 discount
-            $discount_amount = $points / get_option('reward_points_conversion'); // Calculate the discount amount in dollars
-            $discount_amount = $points / get_option('reward_points_conversion'); // Calculate the discount amount in dollars
-            $remaining_points = $points % get_option('reward_points_conversion'); // Calculate the remaining points
-
+            $discount_amount = $points / get_option('reward_points_conversion');
+            $discount_amount = $points / get_option('reward_points_conversion');
+            $remaining_points = $points % get_option('reward_points_conversion');
             // Generate and apply the discount coupon
             $coupon_info = generate_and_apply_discount_coupon($user_id, $discount_amount);
 
@@ -334,9 +326,7 @@ add_action('woocommerce_review_order_before_payment', 'redeem_points_for_discoun
 
 // AJAX action to redeem points
 add_action('wp_ajax_redeem_points_action', 'redeem_points_action');
-add_action('wp_ajax_nopriv_redeem_points_action', 'redeem_points_action');
 
-// AJAX action to redeem points
 function redeem_points_action()
 {
     if (is_user_logged_in()) {
@@ -344,9 +334,9 @@ function redeem_points_action()
         $points = intval(get_user_points($user_id));
 
         if ($points >= 20) {
-            // Check if the user has at least 20 points to redeem for a $1 discount
-            $discount_amount = $points / get_option('reward_points_conversion'); // Calculate the discount amount in dollars
-            $remaining_points = $points % get_option('reward_points_conversion'); // Calculate the remaining points
+            // Checking if the user has at least 20 points to redeem for a $1 discount
+            $discount_amount = $points / get_option('reward_points_conversion');
+            $remaining_points = $points % get_option('reward_points_conversion');
 
             // Generate and apply the discount coupon
             $coupon_info = generate_and_apply_discount_coupon($user_id, $discount_amount);
