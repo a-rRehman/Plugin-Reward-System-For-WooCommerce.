@@ -1,0 +1,9 @@
+Question : Any cases that you think need to be handled , please write here
+
+Answer : WordPress plugin for a WooCommerce Reward System is quite comprehensive, but there are some additional cases and considerations we may consider to handle functionality and user experience.
+
+1) Minimum Purchase Requirement: Implement a minimum purchase requirement for earning points. For instance, a customer should only earn points on purchases over a certain amount.
+
+2) Minimum Points Limit For Redeem : Implement a minimum points limit for redeem. For instance, a customer should only redeem point if they are atleast 20.
+
+3) Maximum Discount Limit: Set a maximum discount limit. If a user has a significant number of points, there should be a cap on how much discount they can receive.
